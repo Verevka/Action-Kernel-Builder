@@ -54,6 +54,9 @@ jobs:
 
     steps:
 
+      # -----------------------------
+      # Dependencies
+      # -----------------------------
       - name: Install Dependencies
         run: |
           sudo apt update
@@ -64,29 +67,22 @@ jobs:
       # -----------------------------
       # Toolchains
       # -----------------------------
-      - name: Download Clang
+      - name: Clone AOSP Clang r536225
         run: |
-          mkdir clang
-          wget https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/main/clang-r536225.tar.gz -O clang.tar.gz
-          tar -xzf clang.tar.gz -C clang
-          rm clang.tar.gz
+          git clone --depth=1 \
+            --branch clang-r536225 \
+            https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86 clang
 
-      - name: Download GCC 64
+      - name: Clone GCC 64
         run: |
-          mkdir gcc64
-          wget https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9/+archive/refs/heads/master.tar.gz -O gcc64.tar.gz
-          tar -xzf gcc64.tar.gz -C gcc64
-          rm gcc64.tar.gz
+          git clone --depth=1 https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9 gcc64
 
-      - name: Download GCC 32
+      - name: Clone GCC 32
         run: |
-          mkdir gcc32
-          wget https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/arm/arm-linux-androideabi-4.9/+archive/refs/heads/master.tar.gz -O gcc32.tar.gz
-          tar -xzf gcc32.tar.gz -C gcc32
-          rm gcc32.tar.gz
+          git clone --depth=1 https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/arm/arm-linux-androideabi-4.9 gcc32
 
       # -----------------------------
-      # Kernel
+      # Kernel Source
       # -----------------------------
       - name: Clone Kernel
         run: |
@@ -96,13 +92,16 @@ jobs:
         run: |
           git clone --depth=1 -b $KERNELSU_BRANCH $KERNELSU_REPO kernel/KernelSU-Next
 
+      # -----------------------------
+      # Build Kernel
+      # -----------------------------
       - name: Build Kernel (Hybrid 4.19)
         working-directory: kernel
         run: |
           export ARCH=arm64
           export SUBARCH=arm64
 
-          export PATH=$(pwd)/../clang/bin:$PATH
+          export PATH=$(pwd)/../clang/clang-r536225/bin:$PATH
           export PATH=$(pwd)/../gcc64/bin:$PATH
           export PATH=$(pwd)/../gcc32/bin:$PATH
 
