@@ -34,7 +34,7 @@ on:
       kernelsu_branch:
         description: "KernelSU-Next branch"
         required: true
-        default: "dev_susfs_ksu"
+        default: "legacy"
 
 jobs:
   build:
@@ -54,6 +54,9 @@ jobs:
 
     steps:
 
+      # -----------------------------
+      # Dependencies
+      # -----------------------------
       - name: Install Dependencies
         run: |
           sudo apt update
@@ -67,21 +70,27 @@ jobs:
       - name: Download Clang
         run: |
           mkdir clang
-          wget https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/main/clang-r536225.tar.gz -O clang.tar.gz
+          wget -q --show-progress \
+          https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+/refs/heads/main/clang-r536225?format=tar \
+          -O clang.tar.gz
           tar -xzf clang.tar.gz -C clang
           rm clang.tar.gz
 
       - name: Download GCC 64
         run: |
           mkdir gcc64
-          wget https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9/+archive/refs/heads/master.tar.gz -O gcc64.tar.gz
+          wget -q --show-progress \
+          https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9/+archive/refs/heads/master.tar.gz \
+          -O gcc64.tar.gz
           tar -xzf gcc64.tar.gz -C gcc64
           rm gcc64.tar.gz
 
       - name: Download GCC 32
         run: |
           mkdir gcc32
-          wget https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/arm/arm-linux-androideabi-4.9/+archive/refs/heads/master.tar.gz -O gcc32.tar.gz
+          wget -q --show-progress \
+          https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/arm/arm-linux-androideabi-4.9/+archive/refs/heads/master.tar.gz \
+          -O gcc32.tar.gz
           tar -xzf gcc32.tar.gz -C gcc32
           rm gcc32.tar.gz
 
@@ -96,7 +105,10 @@ jobs:
         run: |
           git clone --depth=1 -b $KERNELSU_BRANCH $KERNELSU_REPO kernel/KernelSU-Next
 
-      - name: Build Kernel (Hybrid 4.19)
+      # -----------------------------
+      # Build
+      # -----------------------------
+      - name: Build Kernel (Hybrid 4.19 + KSU)
         working-directory: kernel
         run: |
           export ARCH=arm64
@@ -123,7 +135,7 @@ jobs:
       # -----------------------------
       - name: Collect Artifacts
         run: |
-          mkdir release
+          mkdir -p release
 
           if [ -f "kernel/out/arch/arm64/boot/Image.gz-dtb" ]; then
             cp kernel/out/arch/arm64/boot/Image.gz-dtb release/
