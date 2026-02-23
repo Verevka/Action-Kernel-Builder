@@ -147,7 +147,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: build-${{ github.run_number }}
-          name: "${{ env.KERNEL_NAME }} earth build"
+          name: "${{ env.KERNEL_NAME }}-earth"
           files: release/*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
