@@ -27,6 +27,14 @@ on:
         description: "AnyKernel branch"
         required: true
         default: "master"
+      kernelsu_repo:
+        description: "KernelSU-Next repository URL"
+        required: true
+        default: "https://github.com/user25-dev/KernelSU-Next.git"
+      kernelsu_branch:
+        description: "KernelSU-Next branch"
+        required: true
+        default: "dev_susfs_ksu"
 
 jobs:
   build:
@@ -41,6 +49,8 @@ jobs:
       KERNEL_NAME: ${{ github.event.inputs.kernel_name }}
       ANYKERNEL_REPO: ${{ github.event.inputs.anykernel_repo }}
       ANYKERNEL_BRANCH: ${{ github.event.inputs.anykernel_branch }}
+      KERNELSU_REPO: ${{ github.event.inputs.kernelsu_repo }}
+      KERNELSU_BRANCH: ${{ github.event.inputs.kernelsu_branch }}
 
     steps:
 
@@ -81,6 +91,10 @@ jobs:
       - name: Clone Kernel
         run: |
           git clone --depth=1 -b $KERNEL_BRANCH $KERNEL_REPO kernel
+
+      - name: Clone KernelSU-Next
+        run: |
+          git clone --depth=1 -b $KERNELSU_BRANCH $KERNELSU_REPO kernel/KernelSU-Next
 
       - name: Build Kernel (Hybrid 4.19)
         working-directory: kernel
@@ -137,7 +151,7 @@ jobs:
           fi
 
           cd AnyKernel
-          zip -r9 ${KERNEL_NAME}-earth-$(date +%Y%m%d).zip * -x .git README.md
+          zip -r9 ${KERNEL_NAME}-earth-ksu-$(date +%Y%m%d).zip * -x .git README.md
           mv *.zip ../release/
 
       # -----------------------------
@@ -147,7 +161,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: build-${{ github.run_number }}
-          name: "${{ env.KERNEL_NAME }} earth build"
+          name: "${{ env.KERNEL_NAME }}-earth-ksu"
           files: release/*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
