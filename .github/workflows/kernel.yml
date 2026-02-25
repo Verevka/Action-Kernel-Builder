@@ -6,15 +6,15 @@ on:
       kernel_repo:
         description: "Kernel repository URL"
         required: true
-        default: "https://github.com/user25-dev/android_kernel_xiaomi_earth.git"
+        default: "https://github.com/MistOS-psyche/kernel_xiaomi_sm8250.git"
       kernel_branch:
         description: "Kernel branch"
         required: true
-        default: "lineage-23.2"
+        default: "E404-psyche"
       defconfig:
         description: "Kernel defconfig"
         required: true
-        default: "earth_defconfig"
+        default: "vendor/psyche_defconfig"
       kernel_name:
         description: "Kernel name"
         required: true
