@@ -10,11 +10,11 @@ on:
       kernel_branch:
         description: "Kernel branch"
         required: true
-        default: "E404-psyche"
+        default: "aosp-16"
       defconfig:
         description: "Kernel defconfig"
         required: true
-        default: "vendor/psyche_defconfig"
+        default: "psyche_defconfig"
       kernel_name:
         description: "Kernel name"
         required: true
@@ -22,11 +22,11 @@ on:
       anykernel_repo:
         description: "AnyKernel repository URL"
         required: true
-        default: "https://github.com/user25-dev/AnyKernel3"
+        default: "https://github.com/Verevka/Anykernel"
       anykernel_branch:
         description: "AnyKernel branch"
         required: true
-        default: "master"
+        default: "main"
 
 jobs:
   build:
@@ -57,9 +57,7 @@ jobs:
       - name: Download Clang
         run: |
           mkdir clang
-          wget https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/main/clang-r536225.tar.gz -O clang.tar.gz
-          tar -xzf clang.tar.gz -C clang
-          rm clang.tar.gz
+          git clone https://github.com/Verevka/proton-clang --depth=1 clang
 
       - name: Download GCC 64
         run: |
@@ -82,7 +80,7 @@ jobs:
         run: |
           git clone --recurse-submodules --depth=1 -b $KERNEL_BRANCH $KERNEL_REPO kernel
 
-      - name: Build Kernel (Hybrid 4.19)
+      - name: Build Kernel
         working-directory: kernel
         run: |
           export ARCH=arm64
